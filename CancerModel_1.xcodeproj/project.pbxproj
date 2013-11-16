@@ -7,8 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4C0D293618354D3C00C589FE /* Environment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C0D293418354D3C00C589FE /* Environment.cpp */; };
 		4C308919182C2FF50082E298 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C308918182C2FF50082E298 /* main.cpp */; };
 		4C30891B182C2FF50082E298 /* CancerModel_1.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4C30891A182C2FF50082E298 /* CancerModel_1.1 */; };
+		4C308923182C30390082E298 /* Lattic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C308921182C30390082E298 /* Lattic.cpp */; };
+		4C30894A182C57180082E298 /* Cell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C308948182C57180082E298 /* Cell.cpp */; };
+		4C30894D182D10B90082E298 /* CellFate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C30894B182D10B90082E298 /* CellFate.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,9 +29,17 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4C0D293418354D3C00C589FE /* Environment.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Environment.cpp; sourceTree = "<group>"; };
+		4C0D293518354D3C00C589FE /* Environment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Environment.h; sourceTree = "<group>"; };
 		4C308914182C2FF50082E298 /* CancerModel_1 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CancerModel_1; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C308918182C2FF50082E298 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		4C30891A182C2FF50082E298 /* CancerModel_1.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = CancerModel_1.1; sourceTree = "<group>"; };
+		4C308921182C30390082E298 /* Lattic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Lattic.cpp; sourceTree = "<group>"; };
+		4C308922182C30390082E298 /* Lattic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Lattic.h; sourceTree = "<group>"; };
+		4C308948182C57180082E298 /* Cell.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Cell.cpp; sourceTree = "<group>"; };
+		4C308949182C57180082E298 /* Cell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cell.h; sourceTree = "<group>"; };
+		4C30894B182D10B90082E298 /* CellFate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CellFate.cpp; sourceTree = "<group>"; };
+		4C30894C182D10B90082E298 /* CellFate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CellFate.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +73,14 @@
 			isa = PBXGroup;
 			children = (
 				4C308918182C2FF50082E298 /* main.cpp */,
+				4C30894B182D10B90082E298 /* CellFate.cpp */,
+				4C30894C182D10B90082E298 /* CellFate.h */,
+				4C308921182C30390082E298 /* Lattic.cpp */,
+				4C308922182C30390082E298 /* Lattic.h */,
+				4C0D293418354D3C00C589FE /* Environment.cpp */,
+				4C0D293518354D3C00C589FE /* Environment.h */,
+				4C308948182C57180082E298 /* Cell.cpp */,
+				4C308949182C57180082E298 /* Cell.h */,
 				4C30891A182C2FF50082E298 /* CancerModel_1.1 */,
 			);
 			path = CancerModel_1;
@@ -118,6 +138,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				4C308919182C2FF50082E298 /* main.cpp in Sources */,
+				4C308923182C30390082E298 /* Lattic.cpp in Sources */,
+				4C30894A182C57180082E298 /* Cell.cpp in Sources */,
+				4C30894D182D10B90082E298 /* CellFate.cpp in Sources */,
+				4C0D293618354D3C00C589FE /* Environment.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -210,6 +234,7 @@
 				4C308920182C2FF50082E298 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
