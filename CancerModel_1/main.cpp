@@ -17,12 +17,15 @@
 #include "Environment.h"
 #include "CellFate.h"
 #include <fstream>
+#include <cstdlib>
+#include <time.h>
+#include <stdlib.h>
 
 int main(int argc, const char * argv[])
 {
    // Initialize condition
-    int space = 5000;
-    double time_max = 200;
+    int space = 10000;
+    double time_max = 500;
 
     double mean_begin_oxygen_distribution = 0;
     double mean_end_oxygen_distribution = 0;
@@ -36,6 +39,8 @@ int main(int argc, const char * argv[])
     int migration_type = 3;
     double time = 0;
     int sample_size = 10;
+    
+    clock_t start_time = clock();
     
     Environment bcg(space); // initialize all lattices with location, default cell NULL, others 0
     
@@ -164,6 +169,7 @@ int main(int argc, const char * argv[])
                                 location_temp = all_cell[i].random_neighbor(space);
                             }
                             Cell temp((int)all_cell.size(),celltype_temp,location_temp);
+                            temp.set_parent(all_cell[i].get_name());
                             //                temp.show_parameters();
                             all_cell.push_back(temp);
                             bcg[temp.get_location()].set_cell(temp.get_name());
@@ -174,6 +180,29 @@ int main(int argc, const char * argv[])
                 }
                 
             }
+
+        }
+        if ((int)time % 100 == 0) {
+            std::string filename = "/Users/dyt/Dropbox/cancerEvolution/script/cells_5.txt";
+            char str[4];
+            sprintf(str,"%d",(int)time);
+            std::string new_filename = filename + str;
+            
+            std::cout <<"output file: "<<new_filename<<"\n";
+            
+            std::ofstream file_cell;
+            file_cell.open(new_filename);
+            file_cell << "Cells at time "<<time<<"\n";
+            for (int i=0; i<all_cell.size(); i++) {
+                file_cell << all_cell[i].get_name()<<"\t"<< all_cell[i].get_type()<<"\t"<<all_cell[i].get_location()<<"\t"<<all_cell[i].get_stage()<<"\t"<<all_cell[i].get_parent()<<"\n";
+            }
+//            file_cell << "\n";
+//            file_cell << "normal cell:" <<count_normal_cell<<"\n";
+//            file_cell << "type1:" <<count_type1<<"\n";
+//            file_cell << "type2:" <<count_type2<<"\n";
+//            file_cell << "type3:" <<count_type3<<"\n";
+            
+            file_cell.close();
 
         }
     }
@@ -208,14 +237,6 @@ int main(int argc, const char * argv[])
     std::cout << "type2:" <<count_type2<<"\n";
     std::cout << "type3:" <<count_type3<<"\n";
     
-    std::ofstream file_cell;
-    file_cell.open("cells.txt");
-    file_cell << "Cells:\n";
-    for (int i=0; i<all_cell.size(); i++) {
-        file_cell << all_cell[i].get_name()<<"\t"<< all_cell[i].get_type()<<"\t"<<all_cell[i].get_location()<<"\t"<<all_cell[i].get_stage()<<"\t"<<all_cell[i].get_parent()<<"\n";
-    }
-    file_cell.close();
-    
     for (int i=0; i<sample_size; i++) {
         int sample = rand()%space;
         while ( bcg[sample].is_Empty()) {
@@ -225,12 +246,30 @@ int main(int argc, const char * argv[])
         std::cout << all_cell[cell_sample_name].get_name()<<"\t";
         int parent = all_cell[cell_sample_name].get_parent();
         std::cout << parent <<"\t";
-        while (parent != 0) {
+        while (parent != -1) {
             parent = all_cell[parent].get_parent();
             std::cout << parent <<"\t";
         }
-       std::cout << "\n";
+        std::cout << "\n";
     }
+    
+
+    std::ofstream file_cell;
+    file_cell.open("/Users/dyt/Dropbox/cancerEvolution/script/cells_5.txt");
+    file_cell << "Cells:\n";
+    for (int i=0; i<all_cell.size(); i++) {
+        file_cell << all_cell[i].get_name()<<"\t"<< all_cell[i].get_type()<<"\t"<<all_cell[i].get_location()<<"\t"<<all_cell[i].get_stage()<<"\t"<<all_cell[i].get_parent()<<"\n";
+    }
+    file_cell << "\n";
+    file_cell << "normal cell:" <<count_normal_cell<<"\n";
+    file_cell << "type1:" <<count_type1<<"\n";
+    file_cell << "type2:" <<count_type2<<"\n";
+    file_cell << "type3:" <<count_type3<<"\n";
+    
+    file_cell.close();
+    
+    clock_t end_time = clock();
+    std::cout << "Running time: " << (end_time-start_time)/CLOCKS_PER_SEC/60 <<"min\n";
 
     return 0;
 }

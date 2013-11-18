@@ -18,7 +18,7 @@ class Cell
     int name;
     int type;
     int location;
-    int parent = 0;
+    int parent = -1;
     std::string stage = "alive";
     double oxygen_consumption = 0;
     double glucose_consumption = 0;
