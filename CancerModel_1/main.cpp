@@ -16,6 +16,7 @@
 #include "Cell.h"
 #include "Environment.h"
 #include "CellFate.h"
+#include "CellType.h"
 #include <fstream>
 #include <cstdlib>
 #include <time.h>
@@ -40,9 +41,69 @@ int main(int argc, const char * argv[])
     double time = 0;
     int sample_size = 10;
     
+    CellType celltypes(4);
+    celltypes[0].set_oxygenConsumption(0.00002);
+    celltypes[0].set_glucoseConsumption(0);
+    celltypes[0].set_growthFactorSecretion(0);
+    celltypes[0].set_toxicSecretion(0);
+    celltypes[0].set_proliferationTime(8);
+    celltypes[0].set_mutationRate(0);
+    celltypes[0].set_migrationRate(0);
+    celltypes[0].set_deathRate(0);
+    celltypes[0].set_deathOxygen(0.10);
+    celltypes[0].set_deathGlucose(0);
+    celltypes[0].set_deathToxic(0);
+    celltypes[0].set_quiescenceOxygen(0.12);
+    celltypes[0].set_quiescence_glucose(0);
+    
+    celltypes[1].set_oxygenConsumption(0.00002);
+    celltypes[1].set_glucoseConsumption(0);
+    celltypes[1].set_growthFactorSecretion(0);
+    celltypes[1].set_toxicSecretion(0);
+    celltypes[1].set_proliferationTime(6);
+    celltypes[1].set_mutationRate(0.1);
+    celltypes[1].set_migrationRate(0);
+    celltypes[1].set_deathRate(0);
+    celltypes[1].set_deathOxygen(0.10);
+    celltypes[1].set_deathGlucose(0);
+    celltypes[1].set_deathToxic(0);
+    celltypes[1].set_quiescenceOxygen(0.12);
+    celltypes[1].set_quiescence_glucose(0);
+    
+    celltypes[2].set_oxygenConsumption(0.000025);
+    celltypes[2].set_glucoseConsumption(0);
+    celltypes[2].set_growthFactorSecretion(0);
+    celltypes[2].set_toxicSecretion(0);
+    celltypes[2].set_proliferationTime(5);
+    celltypes[2].set_mutationRate(0.15);
+    celltypes[2].set_migrationRate(0);
+    celltypes[2].set_deathRate(0);
+    celltypes[2].set_deathOxygen(0.10);
+    celltypes[2].set_deathGlucose(0);
+    celltypes[2].set_deathToxic(0);
+    celltypes[2].set_quiescenceOxygen(0.12);
+    celltypes[2].set_quiescence_glucose(0);
+    
+    celltypes[3].set_oxygenConsumption(0.00003);
+    celltypes[3].set_glucoseConsumption(0);
+    celltypes[3].set_growthFactorSecretion(0);
+    celltypes[3].set_toxicSecretion(0);
+    celltypes[3].set_proliferationTime(4);
+    celltypes[3].set_mutationRate(0);
+    celltypes[3].set_migrationRate(0.001);
+    celltypes[3].set_deathRate(0);
+    celltypes[3].set_deathOxygen(0.10);
+    celltypes[3].set_deathGlucose(0);
+    celltypes[3].set_deathToxic(0);
+    celltypes[3].set_quiescenceOxygen(0.12);
+    celltypes[3].set_quiescence_glucose(0);
+    
+    Cell::set_celltype(celltypes);
+    
     clock_t start_time = clock();
     
     Environment bcg(space); // initialize all lattices with location, default cell NULL, others 0
+    std::vector<Cell> secondary_tumor;
     
     std::vector<Cell> all_cell;  // initialize cells, place x normal cells and y type1 cancer cell at random lattices
     for (int i=0; i<normal_cell_initial; i++) {
@@ -140,19 +201,24 @@ int main(int argc, const char * argv[])
                         if (!(bcg[neighbour[0]].is_Empty() or bcg[neighbour[1]].is_Empty())) {
                             //              std::cout<<"No neighbour space!\n";
                             if (all_cell[i].get_type() == migration_type) {
-                                //                  std::cout<<"attemp to migrate!\n";
-                                std::vector<int> empty_space = bcg.empty_lattic();
-                                if (empty_space.size()==0) {
-                                    std::cout << "space full!\n";
-                                    time = time_max;
-                                }else{
-                                    Cell temp = fate.migration(all_cell[i], bcg);
-                                    if (temp.get_location() != all_cell[i].get_location()) {
-                                        temp.set_name((int)all_cell.size());
-                                        all_cell.push_back(temp);
-                                        bcg[temp.get_location()].set_cell(temp.get_name());
-                                        //                      all_cell[(int)all_cell.size()-1].show_parameters();
-                                    }
+//                                //                  std::cout<<"attemp to migrate!\n";
+//                                std::vector<int> empty_space = bcg.empty_lattic();
+//                                if (empty_space.size()==0) {
+//                                    std::cout << "space full!\n";
+//                                    time = time_max;
+//                                }else{
+//                                    Cell temp = fate.migration(all_cell[i], bcg);
+//                                    if (temp.get_location() != all_cell[i].get_location()) {
+//                                        temp.set_name((int)all_cell.size());
+//                                        all_cell.push_back(temp);
+//                                        bcg[temp.get_location()].set_cell(temp.get_name());
+//                                        //                      all_cell[(int)all_cell.size()-1].show_parameters();
+//                                    }
+//                                }
+                                if (fate.migrate(all_cell[i])) {
+                                    Cell temp = all_cell[i];
+                                    all_cell[i].set_stage("migrate");
+                                    secondary_tumor.push_back(temp);
                                 }
                             }else{
                                 all_cell[i].set_stage("quiescence");
@@ -203,6 +269,7 @@ int main(int argc, const char * argv[])
 //            file_cell << "type3:" <<count_type3<<"\n";
             
             file_cell.close();
+            
 
         }
     }

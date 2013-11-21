@@ -15,11 +15,11 @@ class Lattic
 {
     int location;
     int cell;
-    double oxygen = 0;
-    double glucose = 0;
-    double growthFactor = 0;
-    double toxic = 0;
-    bool isEmpty = true;
+    double oxygen;
+    double glucose;
+    double growthFactor;
+    double toxic;
+    bool isEmpty;
 //    int space;
     
 public:

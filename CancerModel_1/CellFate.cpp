@@ -83,3 +83,15 @@ bool CellFate::mutate(Cell &c)
         return false;
     }
 }
+
+bool CellFate::migrate(Cell &c)
+{
+    srand((unsigned)time(0));
+    int r = rand() % 100;
+    double rate = c.get_migration_rate();
+    if ((double)r/100 <= rate) {
+        return true;
+    }else{
+        return false;
+    }
+}

@@ -25,6 +25,11 @@
 Lattic::Lattic (int x)
 {
     location = x;
+    oxygen = 0;
+    glucose = 0;
+    growthFactor = 0;
+    toxic = 0;
+    isEmpty = true;
 }
 
 void Lattic::set_cell(int c)

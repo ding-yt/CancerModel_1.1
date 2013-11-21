@@ -17,7 +17,7 @@
 class Environment
 {
     std::vector<Lattic> env;
-    int space = 0;
+    int space;
 //    double cell_oxygen_consumption = 0.01;
 //    double mean_begin_oxygen_distribution = 0;
 //    double mean_end_oxygen_distribution = 0;

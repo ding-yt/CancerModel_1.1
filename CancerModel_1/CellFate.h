@@ -24,8 +24,8 @@ class CellFate
 //    int generation;
 //    int current_generation;
 //    int space;
-    double death_threshold_oxygen = 0.10;
-    double quiescence_threshold_oxygen = 0.12;
+    double death_threshold_oxygen;
+    double quiescence_threshold_oxygen;
 //    double mean_begin_oxygen_distribution = 0;
 //    double mean_end_oxygen_distribution = 0;
 //    double variance_begin_oxygen_distribution = 0.2;
@@ -33,11 +33,12 @@ class CellFate
 
     
 public:
-    CellFate (int i) {;} ;
+    CellFate (int i) {death_threshold_oxygen = 0.10; quiescence_threshold_oxygen = 0.12;} ;
 //    CellFate (Cell::Cell c, Lattic::Lattic l);
     void decide_fate(Cell& c, Lattic& l, double oxygen_diffusion);
     Cell migration(Cell& c, Environment& e);
-    bool mutate(Cell&c);
+    bool mutate(Cell& c);
+    bool migrate(Cell& c);
     
     
 };
