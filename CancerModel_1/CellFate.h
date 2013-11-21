@@ -14,6 +14,7 @@
 #include "Lattic.h"
 #include "Cell.h"
 #include "Environment.h"
+#include <cstdlib>
 
 class CellFate
 {
