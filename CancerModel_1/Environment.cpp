@@ -33,7 +33,12 @@ void Environment::update_all_oxygen(std::vector<Cell> all_cells)
         if (!env[i].is_Empty()) {
             int temp_cell = env[i].get_cell();
             env[i].set_oxygen(env[i].get_oxygen() - all_cells[temp_cell].get_oxygen_consumption());
-        }      
+        }else{
+            if (env[i].get_cell() < 0) {
+                int temp_cell = env[i].get_cell();
+                env[i].set_oxygen(env[i].get_oxygen() + all_cells[temp_cell].get_oxygen_consumption()/10);
+            }
+        }
     }
 }
 
@@ -48,6 +53,16 @@ std::vector<int> Environment::empty_lattic()
     return empty_lattics;
 }
 
+std::vector<int> Environment::occupied_lattic()
+{
+    std::vector<int> occupied_lattics;
+    for (int i=0; i< space; i++) {
+        if (!env[i].is_Empty()) {
+            occupied_lattics.push_back(env[i].get_location());
+        }
+    }
+    return occupied_lattics;
+}
 //void Environment::initialize_enviroment()
 //{
 //    int i;

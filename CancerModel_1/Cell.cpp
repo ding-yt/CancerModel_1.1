@@ -23,6 +23,8 @@ Cell::Cell (int n, int t, int l)
     location.push_back(l);
     stage = "alive";
     parent = -1;
+    birth_time = -1;
+    death_time = -1;
 //    switch (type) {
 //        case 0:
 //            oxygen_consumption = 0.00002;
@@ -111,6 +113,15 @@ void Cell::set_parent (int p)
     parent = p;
 }
 
+void Cell::set_birthTime(double bt)
+{
+    birth_time = bt;
+}
+
+void Cell::set_deathTime(double dt)
+{
+    death_time = dt;
+}
 
 std::vector<int> Cell::find_neighbor( int max )
 {

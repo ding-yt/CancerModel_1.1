@@ -23,6 +23,8 @@ class Cell
     int parent ; //default = -1
     std::string stage; // default = "alive"
     static CellType celltypes;
+    double birth_time;
+    double death_time;
 //    double oxygen_consumption;
 //    double glucose_consumption;
 //    double growthFactor_secretion;
@@ -50,6 +52,8 @@ public:
     void set_parent (int p);
     void show();
     static void set_celltype(CellType all_types);
+    void set_birthTime (double bt);
+    void set_deathTime (double dt);
 //    void set_space (int sp) { space = sp; };
     
     int get_name() const { return name; }
@@ -71,6 +75,8 @@ public:
     double get_death_oxygen() const { return celltypes[type].get_deathOxygen(); }
     double get_death_glucose() const { return celltypes[type].get_deathGlucose(); }
     double get_death_toxic() const { return celltypes[type].get_deathToxic(); }
+    double get_birthTime() const { return birth_time; }
+    double get_deathTime() const { return death_time; }
     
     std::vector<int> find_neighbor( int max);
     int random_neighbor( int max );

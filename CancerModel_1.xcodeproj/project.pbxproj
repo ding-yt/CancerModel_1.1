@@ -14,6 +14,7 @@
 		4C30894A182C57180082E298 /* Cell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C308948182C57180082E298 /* Cell.cpp */; };
 		4C30894D182D10B90082E298 /* CellFate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C30894B182D10B90082E298 /* CellFate.cpp */; };
 		4CC828461839E7D6000AFF76 /* CellType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CC828441839E7D6000AFF76 /* CellType.cpp */; };
+		4CC82854183F9D9B000AFF76 /* ParFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CC82852183F9D9B000AFF76 /* ParFile.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -43,6 +44,8 @@
 		4C30894C182D10B90082E298 /* CellFate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CellFate.h; sourceTree = "<group>"; };
 		4CC828441839E7D6000AFF76 /* CellType.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CellType.cpp; sourceTree = "<group>"; };
 		4CC828451839E7D6000AFF76 /* CellType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CellType.h; sourceTree = "<group>"; };
+		4CC82852183F9D9B000AFF76 /* ParFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParFile.cpp; sourceTree = "<group>"; };
+		4CC82853183F9D9B000AFF76 /* ParFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParFile.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,6 +89,8 @@
 				4C308922182C30390082E298 /* Lattic.h */,
 				4C0D293418354D3C00C589FE /* Environment.cpp */,
 				4C0D293518354D3C00C589FE /* Environment.h */,
+				4CC82852183F9D9B000AFF76 /* ParFile.cpp */,
+				4CC82853183F9D9B000AFF76 /* ParFile.h */,
 				4C30891A182C2FF50082E298 /* CancerModel_1.1 */,
 			);
 			path = CancerModel_1;
@@ -148,6 +153,7 @@
 				4C30894D182D10B90082E298 /* CellFate.cpp in Sources */,
 				4C0D293618354D3C00C589FE /* Environment.cpp in Sources */,
 				4CC828461839E7D6000AFF76 /* CellType.cpp in Sources */,
+				4CC82854183F9D9B000AFF76 /* ParFile.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

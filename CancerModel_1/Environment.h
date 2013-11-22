@@ -36,6 +36,7 @@ public:
     
     int get_space() const { return space; };
     std::vector<int> empty_lattic();
+    std::vector<int> occupied_lattic();
 };
 
 #endif /* defined(__CancerModel_1__Environment__) */

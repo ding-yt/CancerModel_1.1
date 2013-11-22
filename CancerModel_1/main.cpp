@@ -18,94 +18,100 @@
 #include "CellFate.h"
 #include "CellType.h"
 #include <fstream>
+#include <sstream>
 #include <cstdlib>
 #include <time.h>
 #include <stdlib.h>
+#include "ParFile.h"
 
 int main(int argc, const char * argv[])
 {
+    //read from model setting file
+    std::string setting_file, output;
+    std::map<std::string, double> parameters;
+    ParFile p;
+    
+    for (int i=1; i<argc; i++) {
+        if (i+1 != argc) {
+            if (strcmp(argv[i], "-i") == 0){
+                setting_file = argv[i + 1];
+            }else if (strcmp(argv[i], "-o") == 0){
+                output = argv[i+1];
+            }
+        }
+        
+    }
+    
+    parameters = p.get_parameters(setting_file);
+    p.show();
+    
    // Initialize condition
-    int space = 10000;
-    double time_max = 500;
+    int space = (int)parameters["lattices"];
+    double time_max = parameters["time_max"];
 
-    double mean_begin_oxygen_distribution = 0;
-    double mean_end_oxygen_distribution = 0;
-    double variance_begin_oxygen_distribution = 0.2;
-    double variance_end_oxygen_distribution = 6;
+    double mean_begin_oxygen_distribution = parameters["mean_begin_oxygen_distribution"];
+    double mean_end_oxygen_distribution = parameters["mean_end_oxygen_distribution"];
+    double variance_begin_oxygen_distribution = parameters["variance_begin_oxygen_distribution"];
+    double variance_end_oxygen_distribution = parameters["variance_end_oxygen_distribution"];
+    double coefficient = parameters["coefficient"];
     std::vector<int> distribution_range;
-    distribution_range.push_back(-10);
-    distribution_range.push_back(10);
-    int normal_cell_initial = 20;
-    int type1_cell_initial = 10;
-    int migration_type = 3;
+    distribution_range.push_back((int)-parameters["distribution_range"]/2);
+    distribution_range.push_back((int)parameters["distribution_range"]/2);
+    int normal_cell_initial = (int)parameters["type_0_initial_number"];
+    int type1_cell_initial = (int)parameters["type_1_initial_number"];
+    int migration_type = (int)parameters["migration_type"];
+    int sample_size = (int)parameters["sample_size"];
+    double sample_time_interval = parameters["sample_time_interval"];
+    int cell_type_number = parameters["cell_types"];
     double time = 0;
-    int sample_size = 10;
     
-    CellType celltypes(4);
-    celltypes[0].set_oxygenConsumption(0.00002);
-    celltypes[0].set_glucoseConsumption(0);
-    celltypes[0].set_growthFactorSecretion(0);
-    celltypes[0].set_toxicSecretion(0);
-    celltypes[0].set_proliferationTime(8);
-    celltypes[0].set_mutationRate(0);
-    celltypes[0].set_migrationRate(0);
-    celltypes[0].set_deathRate(0);
-    celltypes[0].set_deathOxygen(0.10);
-    celltypes[0].set_deathGlucose(0);
-    celltypes[0].set_deathToxic(0);
-    celltypes[0].set_quiescenceOxygen(0.12);
-    celltypes[0].set_quiescence_glucose(0);
+    CellType celltypes(cell_type_number);
     
-    celltypes[1].set_oxygenConsumption(0.00002);
-    celltypes[1].set_glucoseConsumption(0);
-    celltypes[1].set_growthFactorSecretion(0);
-    celltypes[1].set_toxicSecretion(0);
-    celltypes[1].set_proliferationTime(6);
-    celltypes[1].set_mutationRate(0.1);
-    celltypes[1].set_migrationRate(0);
-    celltypes[1].set_deathRate(0);
-    celltypes[1].set_deathOxygen(0.10);
-    celltypes[1].set_deathGlucose(0);
-    celltypes[1].set_deathToxic(0);
-    celltypes[1].set_quiescenceOxygen(0.12);
-    celltypes[1].set_quiescence_glucose(0);
+    for (int i=0; i<cell_type_number; i++) {
+        std::string prefix = "type_";
+        std::ostringstream s;
+        s << i;
+        std::string o2_consumption = prefix + s.str() + "_oxygen_consumption";
+        std::string g_consumption = prefix + s.str() + "_glucose_consumption";
+        std::string gf_secretion = prefix + s.str() + "_growthFactor_secretion";
+        std::string t_secretion = prefix + s.str() + "_toxic_secretion";
+        std::string proliferation = prefix + s.str() + "_proliferation_time";
+        std::string mutation = prefix + s.str() + "_mutation_rate";
+        std::string migration = prefix + s.str() + "_migration_rate";
+        std::string death = prefix + s.str() + "_death_rate";
+        std::string death_o2 = prefix + s.str() + "_death_oxygen";
+        std::string death_g = prefix + s.str() + "_death_glucose";
+        std::string death_t = prefix + s.str() + "_death_toxic";
+        std::string q_o = prefix + s.str() + "_quiescence_oxygen";
+        std::string q_g = prefix + s.str() + "_quiescence_glucose";
+        celltypes[i].set_oxygenConsumption(parameters[o2_consumption]);
+        celltypes[i].set_glucoseConsumption(parameters[g_consumption]);
+        celltypes[i].set_growthFactorSecretion(parameters[gf_secretion]);
+        celltypes[i].set_toxicSecretion(parameters[t_secretion]);
+        celltypes[i].set_proliferationTime(parameters[proliferation]);
+        celltypes[i].set_mutationRate(parameters[mutation]);
+        celltypes[i].set_migrationRate(parameters[migration]);
+        celltypes[i].set_deathRate(parameters[death]);
+        celltypes[i].set_deathOxygen(parameters[death_o2]);
+        celltypes[i].set_deathGlucose(parameters[death_g]);
+        celltypes[i].set_deathToxic(parameters[death_t]);
+        celltypes[i].set_quiescenceOxygen(parameters[q_o]);
+        celltypes[i].set_quiescence_glucose(parameters[q_g]);
+    }
     
-    celltypes[2].set_oxygenConsumption(0.000025);
-    celltypes[2].set_glucoseConsumption(0);
-    celltypes[2].set_growthFactorSecretion(0);
-    celltypes[2].set_toxicSecretion(0);
-    celltypes[2].set_proliferationTime(5);
-    celltypes[2].set_mutationRate(0.15);
-    celltypes[2].set_migrationRate(0);
-    celltypes[2].set_deathRate(0);
-    celltypes[2].set_deathOxygen(0.10);
-    celltypes[2].set_deathGlucose(0);
-    celltypes[2].set_deathToxic(0);
-    celltypes[2].set_quiescenceOxygen(0.12);
-    celltypes[2].set_quiescence_glucose(0);
     
-    celltypes[3].set_oxygenConsumption(0.00003);
-    celltypes[3].set_glucoseConsumption(0);
-    celltypes[3].set_growthFactorSecretion(0);
-    celltypes[3].set_toxicSecretion(0);
-    celltypes[3].set_proliferationTime(4);
-    celltypes[3].set_mutationRate(0);
-    celltypes[3].set_migrationRate(0.001);
-    celltypes[3].set_deathRate(0);
-    celltypes[3].set_deathOxygen(0.10);
-    celltypes[3].set_deathGlucose(0);
-    celltypes[3].set_deathToxic(0);
-    celltypes[3].set_quiescenceOxygen(0.12);
-    celltypes[3].set_quiescence_glucose(0);
+    celltypes.show();
     
     Cell::set_celltype(celltypes);
     
     clock_t start_time = clock();
     
     Environment bcg(space); // initialize all lattices with location, default cell NULL, others 0
+    
     std::vector<Cell> secondary_tumor;
     
     std::vector<Cell> all_cell;  // initialize cells, place x normal cells and y type1 cancer cell at random lattices
+    
     for (int i=0; i<normal_cell_initial; i++) {
         int type = 0;
         int location = rand()%space;
@@ -115,6 +121,7 @@ int main(int argc, const char * argv[])
             location = rand()%space;
         }
         Cell temp(name,type,location);
+        temp.set_birthTime(0);
         bcg[location].set_cell(name);
         all_cell.push_back(temp);
     }
@@ -128,41 +135,12 @@ int main(int argc, const char * argv[])
             location = rand()%space;
         }
         Cell temp(name,type,location);
+        temp.set_birthTime(0);
         bcg[location].set_cell(name);
         all_cell.push_back(temp);
     }
     
 
-    
-//    std::cout << "\n" << "environment size is " << bcg.get_space();
-//    std::cout << "\n" << "The location of lattic 30 is "<<bcg[30].get_location();
-
-    
-//    Lattic a(1);
-//    std::cout << "Lattic "<<a.get_location()<<" has oxygen "<<a.get_oxygen()<<"\n";
-//    a.set_location(2);
-//    a.set_oxygen(0.5);
-//    std::cout << "Lattic "<<a.get_location()<<" has oxygen "<<a.get_oxygen()<<"\n";
-    
-//    Cell c(0,0,20);
-//    Cell c1(1,3,56);
-//    all_cell.push_back(c);
-//    all_cell.push_back(c1);
-//    std::vector<int> neighbor = c1.find_neighbor( space );
-//    std::cout << "c1 neighbor is ";
-//    for (int i=0; i<neighbor.size(); i++) {
-//        std::cout << neighbor[i]<<" ";
-//    }
-    
-    
-//    bcg[56].set_cell(56);
-//    bcg[55].set_cell(3);
-//    bcg[57].set_cell(4);
-//    bcg[55].remove_cell();
-//    bcg[57].remove_cell();
-//
-//    bcg.update_all_oxygen(all_cell);
-//    std::cout << "\n" << "The lattic 56 has oxygen of "<< bcg[56].get_oxygen();
     for (time = 1; time < time_max; time += 1) {
         std::cout <<"time is: " << time<<"\n";
         bcg.update_all_oxygen(all_cell);
@@ -185,7 +163,7 @@ int main(int argc, const char * argv[])
                     
                     variance = variance_begin_oxygen_distribution + time * (variance_end_oxygen_distribution - variance_begin_oxygen_distribution)/time_max;
                     
-                    oxygen_diffusion = 10*1/sqrt(variance*2*M_PI)*exp(-pow(location_transfer-mean,2)/(2*variance));
+                    oxygen_diffusion = coefficient*1/sqrt(variance*2*M_PI)*exp(-pow(location_transfer-mean,2)/(2*variance));
 //                    std::cout << "\n" << "The lattic 56 has oxygen diffusion of "<< oxygen_diffusion;
 //                    std::cout << "\n" << (distribution_range[1]-distribution_range[0])/(double)space*temp_location;
 //                    std::cout << "\n" << temp_location<<" "<<"cell type "<<all_cell[i].get_type()<<" "<<location_transfer<<" "<<mean<<" "<<variance<<" "<< bcg[temp_location].get_oxygen();
@@ -194,6 +172,7 @@ int main(int argc, const char * argv[])
                     fate.decide_fate(all_cell[i],bcg[temp_location],oxygen_diffusion);
                     //      std::cout << "\n" << all_cell[i].get_stage()<<"\n";
                     if (all_cell[i].get_stage() == "death") {
+                        all_cell[i].set_deathTime(time);
                         bcg[all_cell[i].get_location()].remove_cell();
                     }
                     if (all_cell[i].get_stage()=="proliferation") {
@@ -217,6 +196,7 @@ int main(int argc, const char * argv[])
 //                                }
                                 if (fate.migrate(all_cell[i])) {
                                     Cell temp = all_cell[i];
+                                    temp.set_birthTime(time);
                                     all_cell[i].set_stage("migrate");
                                     secondary_tumor.push_back(temp);
                                 }
@@ -228,17 +208,25 @@ int main(int argc, const char * argv[])
                             int celltype_temp = all_cell[i].get_type();
                             int location_temp = all_cell[i].get_location();
                             
-                            if (fate.mutate(all_cell[i])) {
-                                celltype_temp ++;
-                            }
-                            while (! bcg[location_temp].is_Empty()) {
-                                location_temp = all_cell[i].random_neighbor(space);
-                            }
-                            Cell temp((int)all_cell.size(),celltype_temp,location_temp);
-                            temp.set_parent(all_cell[i].get_name());
+                            if (all_cell[i].get_type() == migration_type && fate.migrate(all_cell[i])) {
+                                Cell temp = all_cell[i];
+                                temp.set_birthTime(time);
+                                all_cell[i].set_stage("migrate");
+                                secondary_tumor.push_back(temp);
+                            }else{
+                                if (fate.mutate(all_cell[i])) {
+                                    celltype_temp ++;
+                                }
+                                while (! bcg[location_temp].is_Empty()) {
+                                    location_temp = all_cell[i].random_neighbor(space);
+                                }
+                                Cell temp((int)all_cell.size(),celltype_temp,location_temp);
+                                temp.set_birthTime(time);
+                                temp.set_parent(all_cell[i].get_name());
                             //                temp.show_parameters();
-                            all_cell.push_back(temp);
-                            bcg[temp.get_location()].set_cell(temp.get_name());
+                                all_cell.push_back(temp);
+                                bcg[temp.get_location()].set_cell(temp.get_name());
+                            }
                             
                         }
                     }
@@ -248,11 +236,11 @@ int main(int argc, const char * argv[])
             }
 
         }
-        if ((int)time % 100 == 0) {
-            std::string filename = "/Users/dyt/Dropbox/cancerEvolution/script/cells_5.txt";
-            char str[4];
-            sprintf(str,"%d",(int)time);
-            std::string new_filename = filename + str;
+        if ((int)time % (int)sample_time_interval == 0) {
+            std::string filename = output;
+            std::ostringstream s;
+            s << time;
+            std::string new_filename = filename + s.str();
             
             std::cout <<"output file: "<<new_filename<<"\n";
             
@@ -260,17 +248,32 @@ int main(int argc, const char * argv[])
             file_cell.open(new_filename);
             file_cell << "Cells at time "<<time<<"\n";
             for (int i=0; i<all_cell.size(); i++) {
-                file_cell << all_cell[i].get_name()<<"\t"<< all_cell[i].get_type()<<"\t"<<all_cell[i].get_location()<<"\t"<<all_cell[i].get_stage()<<"\t"<<all_cell[i].get_parent()<<"\n";
+                file_cell << all_cell[i].get_name()<<"\t"<< all_cell[i].get_type()<<"\t"<<all_cell[i].get_location()<<"\t"<<all_cell[i].get_stage()<<"\t"<<all_cell[i].get_parent()<<"\t"<<all_cell[i].get_birthTime()<<"\t"<<all_cell[i].get_deathTime()<<"\n";
             }
-//            file_cell << "\n";
-//            file_cell << "normal cell:" <<count_normal_cell<<"\n";
-//            file_cell << "type1:" <<count_type1<<"\n";
-//            file_cell << "type2:" <<count_type2<<"\n";
-//            file_cell << "type3:" <<count_type3<<"\n";
             
-            file_cell.close();
+            file_cell << "\n\nSample size: "<<sample_size<<"\n";
+            std::vector<int> occupied_lattices_location = bcg.occupied_lattic();
             
+            if (occupied_lattices_location.size() < sample_size) {
+                file_cell << "not enough cell\n";
+            }else{
+                for (int i=0; i<sample_size; i++) {
+                
+                    int sample = rand()% (int)occupied_lattices_location.size();
 
+                    int cell_sample_name = bcg[occupied_lattices_location[sample]].get_cell();
+                    file_cell << all_cell[cell_sample_name].get_name()<<"\t";
+                    int parent = all_cell[cell_sample_name].get_parent();
+                    file_cell<< parent <<"\t";
+                    while (parent != -1) {
+                        parent = all_cell[parent].get_parent();
+                        file_cell << parent <<"\t";
+                    }
+                    file_cell << "\n";
+                }
+            }
+
+            file_cell.close();
         }
     }
     
@@ -304,12 +307,11 @@ int main(int argc, const char * argv[])
     std::cout << "type2:" <<count_type2<<"\n";
     std::cout << "type3:" <<count_type3<<"\n";
     
+    std::vector<int> occupied_lattices_location = bcg.occupied_lattic();
+    
     for (int i=0; i<sample_size; i++) {
-        int sample = rand()%space;
-        while ( bcg[sample].is_Empty()) {
-            sample = rand()%space;
-        }
-        int cell_sample_name = bcg[sample].get_cell();
+        int sample = rand()%(int)occupied_lattices_location.size();
+        int cell_sample_name = bcg[occupied_lattices_location[sample]].get_cell();
         std::cout << all_cell[cell_sample_name].get_name()<<"\t";
         int parent = all_cell[cell_sample_name].get_parent();
         std::cout << parent <<"\t";
@@ -322,10 +324,10 @@ int main(int argc, const char * argv[])
     
 
     std::ofstream file_cell;
-    file_cell.open("/Users/dyt/Dropbox/cancerEvolution/script/cells_5.txt");
+    file_cell.open(output);
     file_cell << "Cells:\n";
     for (int i=0; i<all_cell.size(); i++) {
-        file_cell << all_cell[i].get_name()<<"\t"<< all_cell[i].get_type()<<"\t"<<all_cell[i].get_location()<<"\t"<<all_cell[i].get_stage()<<"\t"<<all_cell[i].get_parent()<<"\n";
+        file_cell << all_cell[i].get_name()<<"\t"<< all_cell[i].get_type()<<"\t"<<all_cell[i].get_location()<<"\t"<<all_cell[i].get_stage()<<"\t"<<all_cell[i].get_parent()<<"\t"<<all_cell[i].get_birthTime()<<"\t"<<all_cell[i].get_deathTime()<<"\n";
     }
     file_cell << "\n";
     file_cell << "normal cell:" <<count_normal_cell<<"\n";
