@@ -22,6 +22,7 @@
 #include <cstdlib>
 #include <time.h>
 #include <stdlib.h>
+#include "string.h"
 #include "ParFile.h"
 
 int main(int argc, const char * argv[])
