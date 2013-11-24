@@ -87,9 +87,9 @@ bool CellFate::mutate(Cell &c)
 bool CellFate::migrate(Cell &c)
 {
     srand((unsigned)time(0));
-    int r = rand() % 100;
+    int r = rand() % 100000;
     double rate = c.get_migration_rate();
-    if ((double)r/100 <= rate) {
+    if ((double)r/100000 <= rate) {
         return true;
     }else{
         return false;

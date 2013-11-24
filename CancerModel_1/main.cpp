@@ -64,6 +64,7 @@ int main(int argc, const char * argv[])
     double sample_time_interval = parameters["sample_time_interval"];
     int cell_type_number = parameters["cell_types"];
     double time = 0;
+    std::vector<double> migration_time;
     
     CellType celltypes(cell_type_number);
     
@@ -122,6 +123,7 @@ int main(int argc, const char * argv[])
         }
         Cell temp(name,type,location);
         temp.set_birthTime(0);
+        temp.set_parent(-1);
         bcg[location].set_cell(name);
         all_cell.push_back(temp);
     }
@@ -136,6 +138,7 @@ int main(int argc, const char * argv[])
         }
         Cell temp(name,type,location);
         temp.set_birthTime(0);
+        temp.set_parent(-2);
         bcg[location].set_cell(name);
         all_cell.push_back(temp);
     }
@@ -199,6 +202,7 @@ int main(int argc, const char * argv[])
                                     temp.set_birthTime(time);
                                     all_cell[i].set_stage("migrate");
                                     secondary_tumor.push_back(temp);
+                                    migration_time.push_back(time);
                                 }
                             }else{
                                 all_cell[i].set_stage("quiescence");
@@ -213,6 +217,7 @@ int main(int argc, const char * argv[])
                                 temp.set_birthTime(time);
                                 all_cell[i].set_stage("migrate");
                                 secondary_tumor.push_back(temp);
+                                migration_time.push_back(time);
                             }else{
                                 if (fate.mutate(all_cell[i])) {
                                     celltype_temp ++;
@@ -251,6 +256,17 @@ int main(int argc, const char * argv[])
                 file_cell << all_cell[i].get_name()<<"\t"<< all_cell[i].get_type()<<"\t"<<all_cell[i].get_location()<<"\t"<<all_cell[i].get_stage()<<"\t"<<all_cell[i].get_parent()<<"\t"<<all_cell[i].get_birthTime()<<"\t"<<all_cell[i].get_deathTime()<<"\n";
             }
             
+
+            file_cell <<"\n\nSecondary tumor cell:\n";
+            if (secondary_tumor.size() == 0) {
+                std::cout << "No migration!\n\n";
+                file_cell << "No migration!\n\n";
+            }else{
+                for (int i=0; i<secondary_tumor.size(); i++) {
+                    file_cell << secondary_tumor[i].get_name()<<"\t"<< secondary_tumor[i].get_type()<<"\t"<<    secondary_tumor[i].get_location()<<"\t"<<secondary_tumor[i].get_stage()<<"\t"<<secondary_tumor[i].get_parent()<<"\t"<<secondary_tumor[i].get_birthTime()<<"\t"<<secondary_tumor[i].get_deathTime()<<"   \n";
+                }
+            }
+            
             file_cell << "\n\nSample size: "<<sample_size<<"\n";
             std::vector<int> occupied_lattices_location = bcg.occupied_lattic();
             
@@ -265,7 +281,7 @@ int main(int argc, const char * argv[])
                     file_cell << all_cell[cell_sample_name].get_name()<<"\t";
                     int parent = all_cell[cell_sample_name].get_parent();
                     file_cell<< parent <<"\t";
-                    while (parent != -1) {
+                    while (parent >=0 ) {
                         parent = all_cell[parent].get_parent();
                         file_cell << parent <<"\t";
                     }
@@ -307,6 +323,16 @@ int main(int argc, const char * argv[])
     std::cout << "type2:" <<count_type2<<"\n";
     std::cout << "type3:" <<count_type3<<"\n";
     
+    std::cout <<"\n\nSecondary tumor cell:\n";
+    if (secondary_tumor.size() == 0) {
+        std::cout << "No migration!\n\n";
+    }else{
+    for (int i=0; i<secondary_tumor.size(); i++) {
+        std::cout << secondary_tumor[i].get_name()<<"\t"<< secondary_tumor[i].get_type()<<"\t"<<secondary_tumor[i].get_location()<<"\t"<<secondary_tumor[i].get_stage()<<"\t"<<secondary_tumor[i].get_parent()<<"\t"<<secondary_tumor[i].get_birthTime()<<"\t"<<secondary_tumor[i].get_deathTime()<<"\n";
+    }
+    }
+    
+    std::cout << "\n\nSample size: "<<sample_size<<"\n";
     std::vector<int> occupied_lattices_location = bcg.occupied_lattic();
     
     for (int i=0; i<sample_size; i++) {
@@ -315,7 +341,7 @@ int main(int argc, const char * argv[])
         std::cout << all_cell[cell_sample_name].get_name()<<"\t";
         int parent = all_cell[cell_sample_name].get_parent();
         std::cout << parent <<"\t";
-        while (parent != -1) {
+        while (parent >= 0) {
             parent = all_cell[parent].get_parent();
             std::cout << parent <<"\t";
         }
@@ -329,16 +355,44 @@ int main(int argc, const char * argv[])
     for (int i=0; i<all_cell.size(); i++) {
         file_cell << all_cell[i].get_name()<<"\t"<< all_cell[i].get_type()<<"\t"<<all_cell[i].get_location()<<"\t"<<all_cell[i].get_stage()<<"\t"<<all_cell[i].get_parent()<<"\t"<<all_cell[i].get_birthTime()<<"\t"<<all_cell[i].get_deathTime()<<"\n";
     }
+    
+    file_cell <<"\n\nSecondary tumor cell:\n";
+    if (secondary_tumor.size() == 0) {
+        file_cell << "No migration!\n\n";
+    }else{
+    for (int i=0; i<secondary_tumor.size(); i++) {
+        file_cell << secondary_tumor[i].get_name()<<"\t"<< secondary_tumor[i].get_type()<<"\t"<<secondary_tumor[i].get_location()<<"\t"<<secondary_tumor[i].get_stage()<<"\t"<<secondary_tumor[i].get_parent()<<"\t"<<secondary_tumor[i].get_birthTime()<<"\t"<<secondary_tumor[i].get_deathTime()<<"\n";
+    }
+    }
+    
+    std::cout << "\n\nSample size: "<<sample_size<<"\n";
+    
+    for (int i=0; i<sample_size; i++) {
+        int sample = rand()%(int)occupied_lattices_location.size();
+        int cell_sample_name = bcg[occupied_lattices_location[sample]].get_cell();
+        file_cell << all_cell[cell_sample_name].get_name()<<"\t";
+        int parent = all_cell[cell_sample_name].get_parent();
+        file_cell << parent <<"\t";
+        while (parent >= 0) {
+            parent = all_cell[parent].get_parent();
+            file_cell << parent <<"\t";
+        }
+        file_cell << "\n";
+    }
+    
     file_cell << "\n";
     file_cell << "normal cell:" <<count_normal_cell<<"\n";
     file_cell << "type1:" <<count_type1<<"\n";
     file_cell << "type2:" <<count_type2<<"\n";
     file_cell << "type3:" <<count_type3<<"\n";
     
-    file_cell.close();
+    
     
     clock_t end_time = clock();
     std::cout << "Running time: " << (end_time-start_time)/CLOCKS_PER_SEC/60 <<"min\n";
+    
+    file_cell << "Running time: " << (end_time-start_time)/CLOCKS_PER_SEC/60 <<"min\n";
+    file_cell.close();
 
     return 0;
 }
