@@ -299,6 +299,9 @@ int main(int argc, const char * argv[])
                     file_cell << "\n";
                 }
             }
+            
+            clock_t temp_time = clock();
+            file_cell << "\nRunning time: " << (temp_time-start_time)/CLOCKS_PER_SEC/60 <<"min\n";
 
             file_cell.close();
         }
