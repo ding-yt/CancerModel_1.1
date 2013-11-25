@@ -28,6 +28,8 @@ void CellFate::decide_fate(Cell& c, Lattic& l, double oxygen_diffusion)
 //    Lattic lattics = l;
     std::string stage;
     stage = c.get_stage();
+    death_threshold_oxygen = c.get_death_oxygen();
+    quiescence_threshold_oxygen = c.get_quiescence_oxygen();
 //    double location_transfer = -5 + 10/space*lattics.get_location();
 //    double mean = mean_begin_oxygen_distribution + current_generation*(mean_end_oxygen_distribution - mean_begin_oxygen_distribution)/generation;
 //    double variance = variance_begin_oxygen_distribution + current_generation * (variance_end_oxygen_distribution - variance_begin_oxygen_distribution)/generation;
