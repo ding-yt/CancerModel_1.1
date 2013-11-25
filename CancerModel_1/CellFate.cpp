@@ -76,8 +76,8 @@ Cell CellFate::migration(Cell& c, Environment& e)
 bool CellFate::mutate(Cell &c)
 {
     srand((unsigned)time(0));
-    int r = rand() % 100;
-    double rate = (double)r/100;
+    int r = rand() % 10000;
+    double rate = (double)r/10000;
 //    std::cout <<"rand "<<rate<<"\n";
     if (rate < c.get_mutation_rate()) {
         return true;
@@ -89,9 +89,9 @@ bool CellFate::mutate(Cell &c)
 bool CellFate::migrate(Cell &c)
 {
     srand((unsigned)time(0));
-    int r = rand() % 100000;
+    int r = rand() % 10000;
     double rate = c.get_migration_rate();
-    if ((double)r/100000 <= rate) {
+    if ((double)r/10000 <= rate) {
         return true;
     }else{
         return false;

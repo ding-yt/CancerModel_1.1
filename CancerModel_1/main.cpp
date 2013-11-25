@@ -149,6 +149,13 @@ int main(int argc, const char * argv[])
         std::cout <<"time is: " << time<<"\n";
         bcg.update_all_oxygen(all_cell);
         
+        //################################################
+//        for (int i=0; i<space; i++) {
+//            std::cout <<bcg[i].get_oxygen()<<"\t";
+//        }
+//        std::cout << "\n";
+        //################################################
+        
         if ((int)time%8==0 or (int)time%6==0 or (int)time%5==0 or (int)time%4==0) {
             std::cout << "cell number is:"<<all_cell.size()<<"\n";
             int cell_number_this_generation = (int)all_cell.size();
@@ -171,10 +178,13 @@ int main(int argc, const char * argv[])
 //                    std::cout << "\n" << "The lattic 56 has oxygen diffusion of "<< oxygen_diffusion;
 //                    std::cout << "\n" << (distribution_range[1]-distribution_range[0])/(double)space*temp_location;
 //                    std::cout << "\n" << temp_location<<" "<<"cell type "<<all_cell[i].get_type()<<" "<<location_transfer<<" "<<mean<<" "<<variance<<" "<< bcg[temp_location].get_oxygen();
-                    
+                   
                     CellFate fate(1);
                     fate.decide_fate(all_cell[i],bcg[temp_location],oxygen_diffusion);
                     //      std::cout << "\n" << all_cell[i].get_stage()<<"\n";
+//                     std::cout << "Cell "<< i << " at location " << all_cell[i].get_location()<< " has oxygen "<<oxygen_diffusion << ", death theshold is " << all_cell[i].get_death_oxygen() << ", fate is "<<all_cell[i].get_stage();
+                    
+                    
                     if (all_cell[i].get_stage() == "death") {
                         all_cell[i].set_deathTime(time);
                         bcg[all_cell[i].get_location()].remove_cell();
