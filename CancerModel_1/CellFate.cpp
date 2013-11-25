@@ -52,7 +52,7 @@ void CellFate::decide_fate(Cell& c, Lattic& l, double oxygen_diffusion)
 
 Cell CellFate::migration(Cell& c, Environment& e)
 {
-    srand((unsigned)time(0));
+//    srand((unsigned)time(0));
     int r = rand() % 100;
 //    std::cout <<"rand "<<r<<"\n";
     double rate = c.get_migration_rate();
@@ -75,9 +75,9 @@ Cell CellFate::migration(Cell& c, Environment& e)
 
 bool CellFate::mutate(Cell &c)
 {
-    srand((unsigned)time(0));
-    int r = rand() % 10000;
-    double rate = (double)r/10000;
+//    srand((unsigned)time(0));
+    int r = rand();
+    double rate = (double)r/RAND_MAX;
 //    std::cout <<"rand "<<rate<<"\n";
     if (rate < c.get_mutation_rate()) {
         return true;
@@ -88,10 +88,13 @@ bool CellFate::mutate(Cell &c)
 
 bool CellFate::migrate(Cell &c)
 {
-    srand((unsigned)time(0));
-    int r = rand() % 10000;
-    double rate = c.get_migration_rate();
-    if ((double)r/10000 <= rate) {
+//    srand((unsigned)time(0));
+    int r = rand();
+    double rate = (double)r/RAND_MAX;
+//        std::cout <<"r is: "<<random<<" (rate: "<<rate<<")\n";
+
+    if (rate <= c.get_migration_rate()) {
+//        std::cout << "migrate!\n";
         return true;
     }else{
         return false;

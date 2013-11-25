@@ -31,7 +31,7 @@ int main(int argc, const char * argv[])
     std::string setting_file, output;
     std::map<std::string, double> parameters;
     ParFile p;
-    
+    std::cout<<"random max is "<<RAND_MAX<<"\n";
     for (int i=1; i<argc; i++) {
         if (i+1 != argc) {
             if (strcmp(argv[i], "-i") == 0){
