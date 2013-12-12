@@ -133,7 +133,7 @@ int main(int argc, const char * argv[])
         all_cell.push_back(temp);
     }
     
-    for (int j=0; j<type1_cell_initial; j++) {
+    if (type1_cell_initial == 1) {
         int type = 1;
         int location = rand()%space;
         int name = (int)all_cell.size();
@@ -146,6 +146,21 @@ int main(int argc, const char * argv[])
         temp.set_parent(-2);
         bcg[location].set_cell(name);
         all_cell.push_back(temp);
+    }else{
+        for (int j=0; j<type1_cell_initial; j++) {
+            int type = 1;
+            int location = (int)(space/2);
+            int name = (int)all_cell.size();
+        
+            while (! bcg[location].is_Empty()) {
+                location = (int)(space/2) + 1;
+            }
+            Cell temp(name,type,location);
+            temp.set_birthTime(0);
+            temp.set_parent(-2);
+            bcg[location].set_cell(name);
+            all_cell.push_back(temp);
+        }
     }
     
 
