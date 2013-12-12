@@ -61,11 +61,14 @@ int main(int argc, const char * argv[])
     int normal_cell_initial = (int)parameters["type_0_initial_number"];
     int type1_cell_initial = (int)parameters["type_1_initial_number"];
     int migration_type = (int)parameters["migration_type"];
+    double self_migrate = parameters["self_migrate"];
     int sample_size = (int)parameters["sample_size"];
     double sample_time_interval = parameters["sample_time_interval"];
     int cell_type_number = parameters["cell_types"];
     double time = 0;
     std::vector<double> migration_time;
+    std::vector<int> prolifetation_times;
+    int calculate_this_generation = 0;
     
     CellType celltypes(cell_type_number);
     
@@ -99,6 +102,7 @@ int main(int argc, const char * argv[])
         celltypes[i].set_deathToxic(parameters[death_t]);
         celltypes[i].set_quiescenceOxygen(parameters[q_o]);
         celltypes[i].set_quiescence_glucose(parameters[q_g]);
+        prolifetation_times.push_back((int)celltypes[i].get_proliferation_time());
     }
     
     
@@ -155,12 +159,19 @@ int main(int argc, const char * argv[])
 //        }
 //        std::cout << "\n";
         //################################################
+        calculate_this_generation = 0;
         
-        if ((int)time%8==0 or (int)time%6==0 or (int)time%5==0 or (int)time%4==0) {
+        for (int i = 0; i < prolifetation_times.size(); i++) {
+            if ((int)time%prolifetation_times[i] == 0) {
+                calculate_this_generation = 1;
+            }
+        }
+        
+        if (calculate_this_generation == 1) {
             std::cout << "cell number is:"<<all_cell.size()<<"\n";
             int cell_number_this_generation = (int)all_cell.size();
             for (int i=0; i<cell_number_this_generation; i++) {
-                if ((int)time % (int)all_cell[i].get_proliferation_time()==0 and all_cell[i].get_stage() != "death") {
+                if ((int)time % (int)all_cell[i].get_proliferation_time()==0 and all_cell[i].get_stage() != "death" and all_cell[i].get_stage() != "self_migrate") {
                     double temp_location;
                     double location_transfer;
                     double mean;
@@ -209,11 +220,25 @@ int main(int argc, const char * argv[])
 //                                    }
 //                                }
                                 if (fate.migrate(all_cell[i])) {
-                                    Cell temp = all_cell[i];
-                                    temp.set_birthTime(time);
-                                    all_cell[i].set_stage("migrate");
-                                    secondary_tumor.push_back(temp);
-                                    migration_time.push_back(time);
+// self migrate
+                                    double self_m = (double)rand()/RAND_MAX;
+                                    std::cout << self_m<<"\n";
+                                    if (self_m < self_migrate) {
+                                        Cell temp = all_cell[i];
+                                        temp.set_birthTime(time);
+                                        all_cell[i].set_stage("self_migrate");
+                                        temp.set_stage("self_migrate");
+                                        secondary_tumor.push_back(temp);
+                                        migration_time.push_back(time);
+                                        bcg[all_cell[i].get_location()].remove_cell();
+                                    }else{
+                                        Cell temp = all_cell[i];
+                                        temp.set_birthTime(time);
+                                        temp.set_stage("migrate");
+                                        all_cell[i].set_stage("migrate");
+                                        secondary_tumor.push_back(temp);
+                                        migration_time.push_back(time);
+                                    }
                                 }
                             }else{
                                 all_cell[i].set_stage("quiescence");
@@ -224,11 +249,25 @@ int main(int argc, const char * argv[])
                             int location_temp = all_cell[i].get_location();
                             
                             if (all_cell[i].get_type() == migration_type && fate.migrate(all_cell[i])) {
-                                Cell temp = all_cell[i];
-                                temp.set_birthTime(time);
-                                all_cell[i].set_stage("migrate");
-                                secondary_tumor.push_back(temp);
-                                migration_time.push_back(time);
+                                
+                                double self_m = (double)rand()/RAND_MAX;
+                                if (self_m < self_migrate) {
+                                    Cell temp = all_cell[i];
+                                    temp.set_birthTime(time);
+                                    all_cell[i].set_stage("self_migrate");
+                                    temp.set_stage("self_migrate");
+                                    secondary_tumor.push_back(temp);
+                                    migration_time.push_back(time);
+                                    bcg[all_cell[i].get_location()].remove_cell();
+                                }else{
+
+                                    Cell temp = all_cell[i];
+                                    temp.set_birthTime(time);
+                                    temp.set_stage("migrate");
+                                    all_cell[i].set_stage("migrate");
+                                    secondary_tumor.push_back(temp);
+                                    migration_time.push_back(time);
+                                }
                             }else{
                                 if (fate.mutate(all_cell[i])) {
                                     celltype_temp ++;
@@ -263,6 +302,9 @@ int main(int argc, const char * argv[])
             std::ofstream file_cell;
             file_cell.open(new_filename);
             file_cell << "Cells at time "<<time<<"\n";
+            file_cell << "name"<<"\t"<<"type"<<"\t"<<"location"<<"\t"<<"stage"<<"\t"<<"parent"<<"\t"<<"birthTime"<<"\t"<<"deathTime"<<"\n";
+            
+            
             for (int i=0; i<all_cell.size(); i++) {
                 file_cell << all_cell[i].get_name()<<"\t"<< all_cell[i].get_type()<<"\t"<<all_cell[i].get_location()<<"\t"<<all_cell[i].get_stage()<<"\t"<<all_cell[i].get_parent()<<"\t"<<all_cell[i].get_birthTime()<<"\t"<<all_cell[i].get_deathTime()<<"\n";
             }
@@ -276,6 +318,11 @@ int main(int argc, const char * argv[])
                 for (int i=0; i<secondary_tumor.size(); i++) {
                     file_cell << secondary_tumor[i].get_name()<<"\t"<< secondary_tumor[i].get_type()<<"\t"<<    secondary_tumor[i].get_location()<<"\t"<<secondary_tumor[i].get_stage()<<"\t"<<secondary_tumor[i].get_parent()<<"\t"<<secondary_tumor[i].get_birthTime()<<"\t"<<secondary_tumor[i].get_deathTime()<<"   \n";
                 }
+            }
+            
+            if (migration_time.size() != 0) {
+                file_cell <<"\n\nMigration_begin: "<<migration_time[0]<<"\n";
+                file_cell <<"total_migration_cell: "<<secondary_tumor.size()<<"\n";
             }
             
             file_cell << "\n\nSample size: "<<sample_size<<"\n";
@@ -346,6 +393,11 @@ int main(int argc, const char * argv[])
     }
     }
     
+    if (migration_time.size() != 0) {
+        std::cout <<"\n\nMigration_begin: "<<migration_time[0]<<"\n";
+        std::cout <<"total_migration_cell: "<<secondary_tumor.size()<<"\n";
+    }
+    
     std::cout << "\n\nSample size: "<<sample_size<<"\n";
     std::vector<int> occupied_lattices_location = bcg.occupied_lattic();
     
@@ -366,6 +418,8 @@ int main(int argc, const char * argv[])
     std::ofstream file_cell;
     file_cell.open(output);
     file_cell << "Cells:\n";
+    file_cell << "name"<<"\t"<<"type"<<"\t"<<"location"<<"\t"<<"stage"<<"\t"<<"parent"<<"\t"<<"birthTime"<<"\t"<<"deathTime"<<"\n";
+    
     for (int i=0; i<all_cell.size(); i++) {
         file_cell << all_cell[i].get_name()<<"\t"<< all_cell[i].get_type()<<"\t"<<all_cell[i].get_location()<<"\t"<<all_cell[i].get_stage()<<"\t"<<all_cell[i].get_parent()<<"\t"<<all_cell[i].get_birthTime()<<"\t"<<all_cell[i].get_deathTime()<<"\n";
     }
@@ -377,6 +431,11 @@ int main(int argc, const char * argv[])
     for (int i=0; i<secondary_tumor.size(); i++) {
         file_cell << secondary_tumor[i].get_name()<<"\t"<< secondary_tumor[i].get_type()<<"\t"<<secondary_tumor[i].get_location()<<"\t"<<secondary_tumor[i].get_stage()<<"\t"<<secondary_tumor[i].get_parent()<<"\t"<<secondary_tumor[i].get_birthTime()<<"\t"<<secondary_tumor[i].get_deathTime()<<"\n";
     }
+    }
+    
+    if (migration_time.size() != 0) {
+        file_cell <<"\n\nMigration_begin: "<<migration_time[0]<<"\n";
+        file_cell <<"total_migration_cell: "<<secondary_tumor.size()<<"\n";
     }
     
     std::cout << "\n\nSample size: "<<sample_size<<"\n";
