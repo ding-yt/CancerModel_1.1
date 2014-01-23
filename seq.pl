@@ -22,12 +22,16 @@ opendir (DIR1, $dirname) || die " can't open $dirname!\n ";
 closedir DIR1;
 shift @filelist;
 shift @filelist;
+@filelist = ("par2_1.txt1000");
 
 foreach (@filelist) {
-    $filename = $dirname."/".$_;
-    $output = $dirname."/"."seq_".$_;
-    $nex = $dirname."/".$_;
+	$filename = $_;
+	if ($filename =~ /^par\d+_\d+\.txt\d+$/){
+ #   $filename = $dirname."/".$filename;
+    $output = $dirname."/fasta/".$filename.".fas";
+    $nex = $dirname."/nex/".$filename.".nex";
     $treefile_name = "/home/biodept/yd44/cancerEvo/simulation/tree/".$_.".tre";
+    $filename = $dirname."/".$filename;
     
     open (FILE1, $filename) or die "can't open $_\n";
     print ("file is: $_\n");
@@ -67,10 +71,10 @@ foreach (@filelist) {
     if ($sample_begin == 1){
     foreach (@samplelist) {
         @sample_parents = @{$_};
-#        print ("$#sample_parents+1\n");
+        #        print ("$#sample_parents+1\n");
         for ($i = $#sample_parents; $i>=0; $i--){
             if (! exists $mutation_list{$sample_parents[$i]}){
-                #    print ("no $sample_parents[$i] found\n" );
+                #             print ("no $sample_parents[$i] found\n" );
                 
                 #### Find out cell type #####
                 if ($sample_parents[$i] == -1 ){
@@ -85,7 +89,7 @@ foreach (@filelist) {
                 
                 #### Decide mutation ~ possion #####
                     $m_number = random_poisson(1,$mu);
-#                                print ("$mu\t$m_number\n");
+                    #            print ("$mu\t$m_number\n");
                     if ( $m_number != 0){
                         for ( $j=1; $j<=$m_number; $j++){
                             $mutate_position ++;
@@ -141,9 +145,9 @@ foreach (@filelist) {
     
         print ("max diff $mutate_position\n");
         
-        if ($migration != 0){
-            $output .="_m";
-            $nex .= "_m";
+        if ($migration == 0){
+            $output .="_no_mgr";
+            $nex .= "_no_mgr";
         }
         
         ################# FASTA ######################
@@ -157,12 +161,13 @@ foreach (@filelist) {
         print ("output $output ready!\n");
         
         ################# NEX #####################
-        $nex .=".nex";
+ #       $nex .=".nex";
+        
         open (NEXFILE,">$nex") or die "can't open $nex\n";
         select NEXFILE;
         print "#NEXUS\n";
         print "Begin data;\n";
-        print "\tDimensions ntax=$sample_size nchar=$mutate_position;\n";
+        print "\tDimensions ntax=$sample_size nchar=$nchar;\n";
 #        print "\tDimensions ntax=$sample_size nchar=30000000;\n";
         print "\tFormat datatype=dna interleave=yes gap=-;\n";
         print "\tMatrix\n";
@@ -192,5 +197,5 @@ foreach (@filelist) {
     $sample_begin = 0;
     $primary = 1;
     $migration = 1;
-   
+  }
 }
