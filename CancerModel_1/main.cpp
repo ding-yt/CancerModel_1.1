@@ -25,6 +25,7 @@ int main(int argc, const char * argv[])
 {
    // Initialize condition
     int space = 10000;
+    int xStep
     double time_max = 500;
 
     double mean_begin_oxygen_distribution = 0;

@@ -13,11 +13,17 @@
 #include "Lattic.h"
 #include <vector>
 #include "Cell.h"
+#include "PDE_2D.h"
 
 class Environment
 {
     std::vector<Lattic> env;
+    std::vector<std::vector<Lattic>> _env_2D;
     int space = 0;
+    std::vector<std::vector<double>> _oxygen;
+//    std::vector<std::vector<double>> _indicater;
+    int _dimension[3] = {0,0,0};
+    
 //    double cell_oxygen_consumption = 0.01;
 //    double mean_begin_oxygen_distribution = 0;
 //    double mean_end_oxygen_distribution = 0;
@@ -36,6 +42,13 @@ public:
     
     int get_space() const { return space; };
     std::vector<int> empty_lattic();
+    
+//############### 2D ####################//
+    Environment(int x, int y);
+    Lattic& operator() (const int x,const int y);
+    void initialO2(double o2);
+    std::vector<std::vector<double>>* getO2();
+    void updataOxygen(double timeStep,std::vector<std::vector<double>>* indicater);
 };
 
 #endif /* defined(__CancerModel_1__Environment__) */
